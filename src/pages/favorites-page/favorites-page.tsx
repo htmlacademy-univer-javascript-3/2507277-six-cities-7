@@ -1,17 +1,20 @@
 import Header from '../../components/header/header';
-import PlaceCard from '../../components/place-card/place-card';
+import { Link } from 'react-router-dom';
+import OffersList from '../../components/offers-list/offers-list';
+import { AppRoute } from '../../const';
+import { Offer } from '../../types/offer';
 
 type FavoritesPageProps = {
-  offersCount: number;
+  offers: Offer[];
 };
 
-function FavoritesPage({ offersCount }: FavoritesPageProps): JSX.Element {
-  const isEmpty = offersCount === 0;
-  const placeCardsIds = Array.from({ length: offersCount }, (_, index) => `favorite-card-${index}`);
+function FavoritesPage({ offers }: FavoritesPageProps): JSX.Element {
+  const isEmpty = offers.length === 0;
+  const cities = [...new Set(offers.map((offer) => offer.city.name))];
 
   return (
     <div className={`page${isEmpty ? ' page--favorites-empty' : ''}`}>
-      <Header isAuthorized favoritesCount={offersCount} />
+      <Header isAuthorized favoritesCount={offers.length} />
 
       <main className={`page__main page__main--favorites${isEmpty ? ' page__main--favorites-empty' : ''}`}>
         <div className="page__favorites-container container">
@@ -28,18 +31,18 @@ function FavoritesPage({ offersCount }: FavoritesPageProps): JSX.Element {
               <>
                 <h1 className="favorites__title">Saved listing</h1>
                 <ul className="favorites__list">
-                  <li className="favorites__locations-items">
-                    <div className="favorites__locations locations locations--current">
-                      <div className="locations__item">
-                        <a className="locations__item-link" href="#">
-                          <span>Amsterdam</span>
-                        </a>
+                  {cities.map((city) => (
+                    <li className="favorites__locations-items" key={city}>
+                      <div className="favorites__locations locations locations--current">
+                        <div className="locations__item">
+                          <Link className="locations__item-link" to={AppRoute.Main}>
+                            <span>{city}</span>
+                          </Link>
+                        </div>
                       </div>
-                    </div>
-                    <div className="favorites__places">
-                      {placeCardsIds.map((id) => <PlaceCard key={id} variant="favorites" />)}
-                    </div>
-                  </li>
+                      <OffersList offers={offers.filter((offer) => offer.city.name === city)} variant="favorites" />
+                    </li>
+                  ))}
                 </ul>
               </>
             )}
@@ -47,9 +50,9 @@ function FavoritesPage({ offersCount }: FavoritesPageProps): JSX.Element {
         </div>
       </main>
       <footer className="footer container">
-        <a className="footer__logo-link" href="/">
+        <Link className="footer__logo-link" to={AppRoute.Main}>
           <img className="footer__logo" src="/img/logo.svg" alt="6 cities logo" width="64" height="33" />
-        </a>
+        </Link>
       </footer>
     </div>
   );
