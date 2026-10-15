@@ -1,13 +1,15 @@
+import { useState } from 'react';
 import Header from '../../components/header/header';
-import PlaceCard from '../../components/place-card/place-card';
+import OffersList from '../../components/offers-list/offers-list';
+import { Offer } from '../../types/offer';
 
 type MainPageProps = {
-  offersCount: number;
+  offers: Offer[];
 };
 
-function MainPage({ offersCount }: MainPageProps): JSX.Element {
-  const isEmpty = offersCount === 0;
-  const placeCardsIds = Array.from({ length: offersCount }, (_, index) => `place-card-${index}`);
+function MainPage({ offers }: MainPageProps): JSX.Element {
+  const [isSortingOpen, setIsSortingOpen] = useState(false);
+  const isEmpty = offers.length === 0;
 
   return (
     <div className="page page--gray page--main">
@@ -63,27 +65,39 @@ function MainPage({ offersCount }: MainPageProps): JSX.Element {
             ) : (
               <section className="cities__places places">
                 <h2 className="visually-hidden">Places</h2>
-                <b className="places__found">{offersCount} places to stay in Amsterdam</b>
+                <b className="places__found">{offers.length} places to stay in Amsterdam</b>
                 <form className="places__sorting" action="#" method="get">
                   <span className="places__sorting-caption">Sort by</span>
-                  <span className="places__sorting-type" tabIndex={0}>
+                  <span
+                    className="places__sorting-type"
+                    role="button"
+                    tabIndex={0}
+                    aria-expanded={isSortingOpen}
+                    aria-controls="sorting-options"
+                    onClick={() => setIsSortingOpen((isOpen) => !isOpen)}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        setIsSortingOpen((isOpen) => !isOpen);
+                      }
+                      if (event.key === 'Escape') {
+                        setIsSortingOpen(false);
+                      }
+                    }}
+                  >
                     Popular
                     <svg className="places__sorting-arrow" width="7" height="4">
                       <use xlinkHref="#icon-arrow-select"></use>
                     </svg>
                   </span>
-                  <ul className="places__options places__options--custom places__options--opened">
+                  <ul id="sorting-options" className={`places__options places__options--custom${isSortingOpen ? ' places__options--opened' : ''}`}>
                     <li className="places__option places__option--active" tabIndex={0}>Popular</li>
                     <li className="places__option" tabIndex={0}>Price: low to high</li>
                     <li className="places__option" tabIndex={0}>Price: high to low</li>
                     <li className="places__option" tabIndex={0}>Top rated first</li>
                   </ul>
                 </form>
-                <div className="cities__places-list places__list tabs__content">
-                  {placeCardsIds.map((id) => (
-                    <PlaceCard key={id} />
-                  ))}
-                </div>
+                <OffersList offers={offers} />
               </section>
             )}
             <div className="cities__right-section">
