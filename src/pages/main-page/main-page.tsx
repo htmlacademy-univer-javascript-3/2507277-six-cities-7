@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Header from '../../components/header/header';
+import Map from '../../components/map/map';
 import OffersList from '../../components/offers-list/offers-list';
 import { Offer } from '../../types/offer';
 
@@ -101,7 +102,7 @@ function MainPage({ offers }: MainPageProps): JSX.Element {
               </section>
             )}
             <div className="cities__right-section">
-              {!isEmpty && <section className="cities__map map"></section>}
+              {!isEmpty && <Map city={offers[0].city} offers={offers} />}
             </div>
           </div>
         </div>

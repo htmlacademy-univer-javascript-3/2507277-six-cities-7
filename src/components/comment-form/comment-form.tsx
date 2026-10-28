@@ -9,8 +9,8 @@ const ratings = [
 ];
 
 function CommentForm(): JSX.Element {
-  const [rating, setRating] = useState(0);
-  const [comment, setComment] = useState('');
+  const [formData, setFormData] = useState({ rating: 0, comment: '' });
+  const { rating, comment } = formData;
 
   return (
     <form className="reviews__form form" onSubmit={(event) => event.preventDefault()}>
@@ -25,7 +25,7 @@ function CommentForm(): JSX.Element {
               id={`${item.value}-stars`}
               type="radio"
               checked={rating === item.value}
-              onChange={() => setRating(item.value)}
+              onChange={() => setFormData((previous) => ({ ...previous, rating: item.value }))}
             />
             <label htmlFor={`${item.value}-stars`} className="reviews__rating-label form__rating-label" title={item.title}>
               <svg className="form__star-image" width="37" height="33">
@@ -41,7 +41,10 @@ function CommentForm(): JSX.Element {
         name="review"
         placeholder="Tell how was your stay, what you like and what can be improved"
         value={comment}
-        onChange={(event) => setComment(event.target.value)}
+        onChange={(event) => {
+          const { value } = event.target;
+          setFormData((previous) => ({ ...previous, comment: value }));
+        }}
       />
       <div className="reviews__button-wrapper">
         <p className="reviews__help">
