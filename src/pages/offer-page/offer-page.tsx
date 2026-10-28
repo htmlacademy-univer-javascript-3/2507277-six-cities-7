@@ -1,23 +1,30 @@
 import { useParams } from 'react-router-dom';
 import CommentForm from '../../components/comment-form/comment-form';
+import Map from '../../components/map/map';
 import OffersList from '../../components/offers-list/offers-list';
+import ReviewsList from '../../components/reviews-list/reviews-list';
 import NotFoundPage from '../not-found-page/not-found-page';
 import { Offer, OfferDetails } from '../../types/offer';
+import { Review } from '../../types/review';
 import Header from '../../components/header/header';
 
 type OfferPageProps = {
   isAuthorized: boolean;
-  offers: Offer[];
   offerDetails: OfferDetails[];
+  reviews: Record<Offer['id'], Review[]>;
+  nearbyOffers: Record<Offer['id'], Offer[]>;
 };
 
-function OfferPage({ offers, offerDetails, isAuthorized }: OfferPageProps): JSX.Element {
+function OfferPage({ offerDetails, reviews, nearbyOffers, isAuthorized }: OfferPageProps): JSX.Element {
   const { id } = useParams();
   const offer = offerDetails.find((item) => item.id === id);
 
   if (!offer) {
     return <NotFoundPage />;
   }
+
+  const currentReviews = reviews[offer.id] ?? [];
+  const currentNearbyOffers = nearbyOffers[offer.id] ?? [];
 
   return (
     <div className="page">
@@ -88,39 +95,17 @@ function OfferPage({ offers, offerDetails, isAuthorized }: OfferPageProps): JSX.
                 </div>
               </div>
               <section className="offer__reviews reviews">
-                <h2 className="reviews__title">Reviews &middot; <span className="reviews__amount">1</span></h2>
-                <ul className="reviews__list">
-                  <li className="reviews__item">
-                    <div className="reviews__user user">
-                      <div className="reviews__avatar-wrapper user__avatar-wrapper">
-                        <img className="reviews__avatar user__avatar" src="/img/avatar-max.jpg" width="54" height="54" alt="Reviews avatar" />
-                      </div>
-                      <span className="reviews__user-name">Max</span>
-                    </div>
-                    <div className="reviews__info">
-                      <div className="reviews__rating rating">
-                        <div className="reviews__stars rating__stars">
-                          <span style={{ width: '80%' }}></span>
-                          <span className="visually-hidden">Rating</span>
-                        </div>
-                      </div>
-                      <p className="reviews__text">
-                        A quiet cozy and picturesque that hides behind a a river by the unique lightness of Amsterdam. The building is green and from 18th century.
-                      </p>
-                      <time className="reviews__time" dateTime="2019-04-24">April 2019</time>
-                    </div>
-                  </li>
-                </ul>
+                <ReviewsList reviews={currentReviews} />
                 {isAuthorized && <CommentForm key={offer.id} />}
               </section>
             </div>
           </div>
-          <section className="offer__map map"></section>
+          <Map city={offer.city} offers={currentNearbyOffers} className="offer__map map" />
         </section>
         <div className="container">
           <section className="near-places places">
             <h2 className="near-places__title">Other places in the neighbourhood</h2>
-            <OffersList offers={offers.filter((item) => item.id !== offer.id && item.city.name === offer.city.name)} variant="near-places" />
+            <OffersList offers={currentNearbyOffers} variant="near-places" />
           </section>
         </div>
       </main>

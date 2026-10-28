@@ -7,13 +7,16 @@ import NotFoundPage from '../../pages/not-found-page/not-found-page';
 import OfferPage from '../../pages/offer-page/offer-page';
 import PrivateRoute from '../private-route/private-route';
 import { Offer, OfferDetails } from '../../types/offer';
+import { Review } from '../../types/review';
 
 type AppScreenProps = {
   offers: Offer[];
   offerDetails: OfferDetails[];
+  reviews: Record<Offer['id'], Review[]>;
+  nearbyOffers: Record<Offer['id'], Offer[]>;
 };
 
-function App({ offers, offerDetails }: AppScreenProps): JSX.Element {
+function App({ offers, offerDetails, reviews, nearbyOffers }: AppScreenProps): JSX.Element {
   const isAuthorized = false;
 
   return (
@@ -29,7 +32,17 @@ function App({ offers, offerDetails }: AppScreenProps): JSX.Element {
             </PrivateRoute>
           }
         />
-        <Route path={AppRoute.Offer} element={<OfferPage offers={offers} offerDetails={offerDetails} isAuthorized={isAuthorized} />} />
+        <Route
+          path={AppRoute.Offer}
+          element={
+            <OfferPage
+              offerDetails={offerDetails}
+              reviews={reviews}
+              nearbyOffers={nearbyOffers}
+              isAuthorized={isAuthorized}
+            />
+          }
+        />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>

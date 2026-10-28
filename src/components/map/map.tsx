@@ -6,6 +6,7 @@ import 'leaflet/dist/leaflet.css';
 type MapProps = {
   city: City;
   offers: Offer[];
+  className?: string;
 };
 
 const markerIcon = new Icon({
@@ -14,7 +15,7 @@ const markerIcon = new Icon({
   iconAnchor: [13.5, 39],
 });
 
-function Map({ city, offers }: MapProps): JSX.Element {
+function Map({ city, offers, className = 'cities__map map' }: MapProps): JSX.Element {
   const mapRef = useRef<HTMLElement | null>(null);
   const { latitude, longitude, zoom } = city.location;
 
@@ -46,7 +47,7 @@ function Map({ city, offers }: MapProps): JSX.Element {
     };
   }, [latitude, longitude, zoom, offers]);
 
-  return <section className="cities__map map" ref={mapRef} aria-label={`Rental offers in ${city.name}`} />;
+  return <section className={className} ref={mapRef} aria-label={`Rental offers in ${city.name}`} />;
 }
 
 export default Map;
