@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { AppRoute } from '../../const';
 import FavoritesPage from '../../pages/favorites-page/favorites-page';
 import LoginPage from '../../pages/login-page/login-page';
@@ -8,21 +9,22 @@ import OfferPage from '../../pages/offer-page/offer-page';
 import PrivateRoute from '../private-route/private-route';
 import { Offer, OfferDetails } from '../../types/offer';
 import { Review } from '../../types/review';
+import { selectOffers } from '../../store/selectors';
 
 type AppScreenProps = {
-  offers: Offer[];
   offerDetails: OfferDetails[];
   reviews: Record<Offer['id'], Review[]>;
   nearbyOffers: Record<Offer['id'], Offer[]>;
 };
 
-function App({ offers, offerDetails, reviews, nearbyOffers }: AppScreenProps): JSX.Element {
+function App({ offerDetails, reviews, nearbyOffers }: AppScreenProps): JSX.Element {
+  const offers = useSelector(selectOffers);
   const isAuthorized = false;
 
   return (
     <BrowserRouter>
       <Routes>
-        <Route path={AppRoute.Main} element={<MainPage offers={offers} />} />
+        <Route path={AppRoute.Main} element={<MainPage />} />
         <Route path={AppRoute.Login} element={<LoginPage />} />
         <Route
           path={AppRoute.Favorites}
